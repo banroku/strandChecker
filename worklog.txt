@@ -1,0 +1,9 @@
+180520  20:30-22:00 01:30
+implemented movie2image.py
+next: ok0032-ok0049 to ng
+next: learn best format of training images
+
+180521  5:00-6:30   03:00
+runned movie2image.py to all movies 
+next: categorize images to ok/ng
+next: generate data from images

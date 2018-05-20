@@ -10,7 +10,7 @@ from keras.applications.imagenet_utils import decode_predictions
 
 model = vgg16.VGG16(weights='imagenet')
 
-filename = 'images/banana-01.jpg'
+filename = 'image/ok0041.bmp'
 original = load_img(filename, target_size=(224, 224))
 print('PIL image size', original.size)
 
@@ -22,3 +22,6 @@ print('image batch size', image_batch.shape)
 
 processed_image = vgg16.preprocess_input(image_batch.copy())
 predictions = model.predict(processed_image)
+
+label = decode_predictions(predictions)
+print(label)
