@@ -7,3 +7,11 @@ next: learn best format of training images
 runned movie2image.py to all movies 
 next: categorize images to ok/ng
 next: generate data from images
+
+180522  5:30-6:30   03:30
+categorized ok and ng images
+
+180523  5:30-7:00   05:00
+implemented separateCVfiles.py and separated cv to image_cv
+next: ImageDataGenerator to fetch ok/ng data set
+
