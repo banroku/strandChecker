@@ -1,4 +1,4 @@
-#!/sur/bin/python3
+#!/usr/bin/python3
 # https://www.learnopencv.com/keras-tutorial-using-pre-trained-imagenet-models/
 import numpy as np
 import keras

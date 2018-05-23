@@ -1,4 +1,3 @@
-#!/usr/bin/python3
 '''This script goes along the blog post
 "Building powerful image classification models using very little data"
 from blog.keras.io.
@@ -40,28 +39,25 @@ import numpy as np
 from keras.preprocessing.image import ImageDataGenerator
 from keras.models import Sequential
 from keras.layers import Dropout, Flatten, Dense
-from keras.applications import vgg16
+from keras import applications
 
 # dimensions of our images.
-img_width, img_height = 224, 224
+img_width, img_height = 150, 150
 
 top_model_weights_path = 'bottleneck_fc_model.h5'
-train_data_dir = 'image/image_train'
-validation_data_dir = 'image/image_cv'
-nb_train_ng = 172
-nb_train_ok = 185
-nb_validation_ng = 44
-nb_validation_ok = 48
-nb_train_samples = nb_train_ng + nb_train_ok
-nb_validation_samples = nb_validation_ng + nb_validation_ok
-epochs = 500
-batch_size = 4
+train_data_dir = 'data/train'
+validation_data_dir = 'data/validation'
+nb_train_samples = 2000
+nb_validation_samples = 800
+epochs = 50
+batch_size = 16
 
-def save_bottleneck_features():
+
+def save_bottlebeck_features():
     datagen = ImageDataGenerator(rescale=1. / 255)
 
     # build the VGG16 network
-    model = vgg16.VGG16(include_top=False, weights='imagenet')
+    model = applications.VGG16(include_top=False, weights='imagenet')
 
     generator = datagen.flow_from_directory(
         train_data_dir,
@@ -71,7 +67,7 @@ def save_bottleneck_features():
         shuffle=False)
     bottleneck_features_train = model.predict_generator(
         generator, nb_train_samples // batch_size)
-    np.save(open('bottleneck_features_train.npy', 'wb'),
+    np.save(open('bottleneck_features_train.npy', 'w'),
             bottleneck_features_train)
 
     generator = datagen.flow_from_directory(
@@ -82,18 +78,18 @@ def save_bottleneck_features():
         shuffle=False)
     bottleneck_features_validation = model.predict_generator(
         generator, nb_validation_samples // batch_size)
-    np.save(open('bottleneck_features_validation.npy', 'wb'),
+    np.save(open('bottleneck_features_validation.npy', 'w'),
             bottleneck_features_validation)
 
 
 def train_top_model():
-    train_data = np.load('bottleneck_features_train.npy')
+    train_data = np.load(open('bottleneck_features_train.npy'))
     train_labels = np.array(
-        [0] * nb_train_ng + [1] * nb_train_ok)
+        [0] * (nb_train_samples / 2) + [1] * (nb_train_samples / 2))
 
-    validation_data = np.load('bottleneck_features_validation.npy')
+    validation_data = np.load(open('bottleneck_features_validation.npy'))
     validation_labels = np.array(
-        [0] * nb_validation_ng + [1] * nb_validation_ok)
+        [0] * (nb_validation_samples / 2) + [1] * (nb_validation_samples / 2))
 
     model = Sequential()
     model.add(Flatten(input_shape=train_data.shape[1:]))
@@ -109,6 +105,7 @@ def train_top_model():
               batch_size=batch_size,
               validation_data=(validation_data, validation_labels))
     model.save_weights(top_model_weights_path)
+
 
 save_bottlebeck_features()
 train_top_model()
