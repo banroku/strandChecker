@@ -15,3 +15,9 @@ categorized ok and ng images
 implemented separateCVfiles.py and separated cv to image_cv
 next: ImageDataGenerator to fetch ok/ng data set
 
+180524  4:30-6:30   07:00
+downloaded classifier_from_little_data_script_2.py from github
+cp it to strandChecker.py and modified to own setting
+run it and fixed minor errors...
+next: imput size and output size are not matched, to be fixed. 
+most easy way: cut some files to make total nb equal to x4
