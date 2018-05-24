@@ -48,13 +48,13 @@ img_width, img_height = 224, 224
 top_model_weights_path = 'bottleneck_fc_model.h5'
 train_data_dir = 'image/image_train'
 validation_data_dir = 'image/image_cv'
-nb_train_ng = 172
-nb_train_ok = 185
-nb_validation_ng = 44
-nb_validation_ok = 48
+nb_train_ng = 170
+nb_train_ok = 182
+nb_validation_ng = 42
+nb_validation_ok = 46
 nb_train_samples = nb_train_ng + nb_train_ok
 nb_validation_samples = nb_validation_ng + nb_validation_ok
-epochs = 500
+epochs = 010
 batch_size = 4
 
 def save_bottleneck_features():
@@ -85,7 +85,6 @@ def save_bottleneck_features():
     np.save(open('bottleneck_features_validation.npy', 'wb'),
             bottleneck_features_validation)
 
-
 def train_top_model():
     train_data = np.load('bottleneck_features_train.npy')
     train_labels = np.array(
@@ -95,20 +94,21 @@ def train_top_model():
     validation_labels = np.array(
         [0] * nb_validation_ng + [1] * nb_validation_ok)
 
-    model = Sequential()
-    model.add(Flatten(input_shape=train_data.shape[1:]))
-    model.add(Dense(256, activation='relu'))
-    model.add(Dropout(0.5))
-    model.add(Dense(1, activation='sigmoid'))
+    top_model = Sequential()
+    top_model.add(Flatten(input_shape=train_data.shape[1:]))
+    top_model.add(Dense(256, activation='relu'))
+    top_model.add(Dropout(0.5))
+    top_model.add(Dense(1, activation='sigmoid'))
 
-    model.compile(optimizer='rmsprop',
+    top_model.compile(optimizer='rmsprop',
                   loss='binary_crossentropy', metrics=['accuracy'])
 
-    model.fit(train_data, train_labels,
+    top_model.fit(train_data, train_labels,
               epochs=epochs,
               batch_size=batch_size,
               validation_data=(validation_data, validation_labels))
-    model.save_weights(top_model_weights_path)
+    top_model.save_weights(top_model_weights_path)
 
-save_bottlebeck_features()
+
+save_bottleneck_features()
 train_top_model()

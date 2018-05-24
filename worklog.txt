@@ -21,3 +21,13 @@ cp it to strandChecker.py and modified to own setting
 run it and fixed minor errors...
 next: imput size and output size are not matched, to be fixed. 
 most easy way: cut some files to make total nb equal to x4
+
+180525  2:15-3:30   08:15
+cut input samples to make total No equal to x4
+ran top_model.fit first time and got ~97 acc. for cv. 
+done error-checking: 
+    train data - all 352 images matched to the label
+    cv data - 1/88 image unmatched to the label (judge ng for ok)
+        movie06_0030.bmp
+        it has truely only has four strand!!
+        strandChecker even found human labelling error ...
