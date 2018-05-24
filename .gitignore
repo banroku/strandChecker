@@ -3,6 +3,8 @@
 *.mp4
 *.swp
 *.npy
+*.h5
+!bottleneck_fc_model.h5
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
