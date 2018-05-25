@@ -54,14 +54,14 @@ nb_validation_ng = 42
 nb_validation_ok = 46
 nb_train_samples = nb_train_ng + nb_train_ok
 nb_validation_samples = nb_validation_ng + nb_validation_ok
-epochs = 010
+epochs = 10
 batch_size = 4
 
 def save_bottleneck_features():
     datagen = ImageDataGenerator(rescale=1. / 255)
 
     # build the VGG16 network
-    model = vgg16.VGG16(include_top=False, weights='imagenet')
+    base_model = vgg16.VGG16(include_top=False, weights='imagenet')
 
     generator = datagen.flow_from_directory(
         train_data_dir,
@@ -69,7 +69,7 @@ def save_bottleneck_features():
         batch_size=batch_size,
         class_mode=None,
         shuffle=False)
-    bottleneck_features_train = model.predict_generator(
+    bottleneck_features_train = base_model.predict_generator(
         generator, nb_train_samples // batch_size)
     np.save(open('bottleneck_features_train.npy', 'wb'),
             bottleneck_features_train)
@@ -80,7 +80,7 @@ def save_bottleneck_features():
         batch_size=batch_size,
         class_mode=None,
         shuffle=False)
-    bottleneck_features_validation = model.predict_generator(
+    bottleneck_features_validation = base_model.predict_generator(
         generator, nb_validation_samples // batch_size)
     np.save(open('bottleneck_features_validation.npy', 'wb'),
             bottleneck_features_validation)
@@ -109,6 +109,66 @@ def train_top_model():
               validation_data=(validation_data, validation_labels))
     top_model.save_weights(top_model_weights_path)
 
+def realtimeCheck():
+    import cv2
+    
+    INPUT_TITLE = 'movie08'
+    INPUT_MOVIE = 'movie/' + INPUT_TITLE + '.mp4'
+    OUTPUT_TITLE = INPUT_TITLE
+    OUTPUT_SIZE = (224, 224)
+    INTERVAL = 90  # in frame (fps = 30)
 
-save_bottleneck_features()
-train_top_model()
+    cap = cv2.VideoCapture(INPUT_MOVIE)
+    rep, frame = cap.read()
+
+    INPUT_WIDTH = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
+    INPUT_HEIGHT = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
+    
+    print('input size = ', INPUT_WIDTH, INPUT_HEIGHT)
+    
+    base_model = vgg16.VGG16(include_top=False, weights='imagenet')
+
+    top_model = Sequential()
+    top_model.add(Flatten(input_shape=(7,7,512)))
+    top_model.add(Dense(256, activation='relu'))
+    top_model.add(Dropout(0.5))
+    top_model.add(Dense(1, activation='sigmoid'))
+
+    top_model.compile(optimizer='rmsprop',
+                  loss='binary_crossentropy', metrics=['accuracy'])
+    top_model.load_weights(top_model_weights_path)
+    
+    datagen = ImageDataGenerator(rescale=1. / 255)
+
+    i = 0
+    while rep is True:
+        if i % INTERVAL == 0:
+            OUTPUT_NUM = int(i/INTERVAL)
+            OUTPUT_FILE = 'result/' + OUTPUT_TITLE + \
+                '_' + '{:0>4}'.format(OUTPUT_NUM) + '.bmp'
+            frame_trimed = frame[290:1010, :]
+            frame_resized = cv2.resize(frame_trimed, OUTPUT_SIZE)
+            frame_transposed = frame_resized.transpose(1,0,2)
+            input_data = np.asarray([frame_transposed, ])/255
+
+            base_prediction = base_model.predict(input_data)
+            top_prediction = top_model.predict(base_prediction)
+            
+            if top_prediction < 0.5:
+                print('cut!')
+                cv2.putText(frame_resized, 'strand cut!', (0, 10),
+                cv2.FONT_HERSHEY_PLAIN, 1, (255, 255, 255), 1,
+                cv2.LINE_AA)
+            else: 
+                print('ok!')
+                cv2.putText(frame_resized, 'strand ok!', (0, 10),
+                cv2.FONT_HERSHEY_PLAIN, 1, (255, 255, 255), 1,
+                cv2.LINE_AA)
+
+            cv2.imwrite(OUTPUT_FILE, frame_resized)
+
+        rep, frame = cap.read()
+        i += 1
+    
+    cap.release()
+    
