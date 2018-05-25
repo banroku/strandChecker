@@ -31,3 +31,16 @@ done error-checking:
         movie06_0030.bmp
         it has truely only has four strand!!
         strandChecker even found human labelling error ...
+
+Next: real-time starndChecker from camera
+      to validate its robustness. 
+      (on rasberryPi if possible.)
+
+180525  5:00-6:30   09:45
+continuous predict from movie. 
+acc rate not high... 
+since using weight trained only in 10 epochs? 
+
+Next: retrain model with 50 epochs and try again real-time strandcheck
+Next: real-time standChecker from video cap
+
