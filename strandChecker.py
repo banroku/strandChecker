@@ -54,7 +54,7 @@ nb_validation_ng = 42
 nb_validation_ok = 46
 nb_train_samples = nb_train_ng + nb_train_ok
 nb_validation_samples = nb_validation_ng + nb_validation_ok
-epochs = 10
+epochs = 50
 batch_size = 4
 
 def save_bottleneck_features():
@@ -112,20 +112,6 @@ def train_top_model():
 def realtimeCheck():
     import cv2
     
-    INPUT_TITLE = 'movie08'
-    INPUT_MOVIE = 'movie/' + INPUT_TITLE + '.mp4'
-    OUTPUT_TITLE = INPUT_TITLE
-    OUTPUT_SIZE = (224, 224)
-    INTERVAL = 90  # in frame (fps = 30)
-
-    cap = cv2.VideoCapture(INPUT_MOVIE)
-    rep, frame = cap.read()
-
-    INPUT_WIDTH = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
-    INPUT_HEIGHT = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
-    
-    print('input size = ', INPUT_WIDTH, INPUT_HEIGHT)
-    
     base_model = vgg16.VGG16(include_top=False, weights='imagenet')
 
     top_model = Sequential()
@@ -140,6 +126,20 @@ def realtimeCheck():
     
     datagen = ImageDataGenerator(rescale=1. / 255)
 
+    INPUT_TITLE = 'movie06'
+    INPUT_MOVIE = 'movie/' + INPUT_TITLE + '.mp4'
+    OUTPUT_TITLE = INPUT_TITLE
+    OUTPUT_SIZE = (224, 224)
+    INTERVAL = 30  # in frame (fps = 30)
+
+    cap = cv2.VideoCapture(INPUT_MOVIE)
+    rep, frame = cap.read()
+
+    INPUT_WIDTH = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
+    INPUT_HEIGHT = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
+    
+    print('input size = ', INPUT_WIDTH, INPUT_HEIGHT)
+    
     i = 0
     while rep is True:
         if i % INTERVAL == 0:
@@ -156,19 +156,21 @@ def realtimeCheck():
             
             if top_prediction < 0.5:
                 print('cut!')
-                cv2.putText(frame_resized, 'strand cut!', (0, 10),
-                cv2.FONT_HERSHEY_PLAIN, 1, (255, 255, 255), 1,
+                cv2.putText(frame_resized, 'NG!', (0, 10),
+                cv2.FONT_HERSHEY_PLAIN, 2, (255, 255, 255), 1,
                 cv2.LINE_AA)
             else: 
                 print('ok!')
-                cv2.putText(frame_resized, 'strand ok!', (0, 10),
+                cv2.putText(frame_resized, 'OK', (0, 10),
                 cv2.FONT_HERSHEY_PLAIN, 1, (255, 255, 255), 1,
                 cv2.LINE_AA)
 
-            cv2.imwrite(OUTPUT_FILE, frame_resized)
-
+            #cv2.imwrite(OUTPUT_FILE, frame_resized)
+            cv2.imshow("output", frame_resized)
+            cv2.waitKey(1)
         rep, frame = cap.read()
         i += 1
     
+    cv2.destroyAllWindows()
     cap.release()
     
