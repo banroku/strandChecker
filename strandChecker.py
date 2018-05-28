@@ -148,8 +148,7 @@ def realtimeCheck():
                 '_' + '{:0>4}'.format(OUTPUT_NUM) + '.bmp'
             frame_trimed = frame[290:1010, :]
             frame_resized = cv2.resize(frame_trimed, OUTPUT_SIZE)
-            frame_transposed = frame_resized.transpose(1,0,2)
-            input_data = np.asarray([frame_transposed, ])/255
+            input_data = np.asarray([frame_resized, ])/255
 
             base_prediction = base_model.predict(input_data)
             top_prediction = top_model.predict(base_prediction)
