@@ -2,6 +2,8 @@
 *.bmp
 *.mp4
 *.swp
+*.npy
+*.h5
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

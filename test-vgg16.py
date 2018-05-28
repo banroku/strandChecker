@@ -1,4 +1,4 @@
-#!/sur/bin/python3
+#!/usr/bin/python3
 # https://www.learnopencv.com/keras-tutorial-using-pre-trained-imagenet-models/
 import numpy as np
 import keras
@@ -10,7 +10,7 @@ from keras.applications.imagenet_utils import decode_predictions
 
 model = vgg16.VGG16(weights='imagenet')
 
-filename = 'image/ok0041.bmp'
+filename = 'image/image_cv/ng/movie06_0004.bmp'
 original = load_img(filename, target_size=(224, 224))
 print('PIL image size', original.size)
 
