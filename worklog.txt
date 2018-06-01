@@ -44,3 +44,17 @@ since using weight trained only in 10 epochs?
 Next: retrain model with 50 epochs and try again real-time strandcheck
 Next: real-time standChecker from video cap
 
+180528  5:00-6:00   10:45
+tried different batch size in ImageDataGenerator. (16: ok, 32:freezed)
+removed transpose of image in sc.realtimeCheck and got 97-100 acc on image06.mp4
+
+Next: try real time check on extruder. 
+Next: Move this system on raspi?
+
+180601  4:30-5:00   11:15
+validation check by new movie 'movie11' and 'movie12'. 
+They showed several wrong prediction, 
+while 'movie06' got almost 100% right prediction, 
+indicating the over fitting of the model. 
+
+Next: write brief report. 
