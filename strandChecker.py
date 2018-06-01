@@ -54,7 +54,7 @@ nb_validation_ng = 42
 nb_validation_ok = 46
 nb_train_samples = nb_train_ng + nb_train_ok
 nb_validation_samples = nb_validation_ng + nb_validation_ok
-epochs = 50
+epochs = 25
 batch_size = 4
 
 def save_bottleneck_features():
@@ -109,7 +109,7 @@ def train_top_model():
               validation_data=(validation_data, validation_labels))
     top_model.save_weights(top_model_weights_path)
 
-def realtimeCheck():
+def realtimeCheck(INPUT_TITLE='movie06', save=False):
     import cv2
     
     base_model = vgg16.VGG16(include_top=False, weights='imagenet')
@@ -126,7 +126,6 @@ def realtimeCheck():
     
     datagen = ImageDataGenerator(rescale=1. / 255)
 
-    INPUT_TITLE = 'movie06'
     INPUT_MOVIE = 'movie/' + INPUT_TITLE + '.mp4'
     OUTPUT_TITLE = INPUT_TITLE
     OUTPUT_SIZE = (224, 224)
@@ -154,18 +153,24 @@ def realtimeCheck():
             top_prediction = top_model.predict(base_prediction)
             
             if top_prediction < 0.5:
-                print('cut!')
-                cv2.putText(frame_resized, 'NG!', (0, 10),
-                cv2.FONT_HERSHEY_PLAIN, 2, (255, 255, 255), 1,
+                caption = 'NG! (' + str(round(
+                    np.float(1 - top_prediction), 2)) + ' %)'
+                print(caption)
+                cv2.putText(frame_resized, caption, (5, 15),
+                cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 255), 2,
                 cv2.LINE_AA)
             else: 
-                print('ok!')
-                cv2.putText(frame_resized, 'OK', (0, 10),
-                cv2.FONT_HERSHEY_PLAIN, 1, (255, 255, 255), 1,
+                caption = 'OK! (' + str(round(
+                    np.float(top_prediction), 2)) + ' %)'
+                print(caption)
+                cv2.putText(frame_resized, caption, (5, 15),
+                cv2.FONT_HERSHEY_PLAIN, 1, (255, 255, 255), 2,
                 cv2.LINE_AA)
 
-            #cv2.imwrite(OUTPUT_FILE, frame_resized)
-            cv2.imshow("output", frame_resized)
+            if save:
+                cv2.imwrite(OUTPUT_FILE, frame_resized)
+
+            cv2.imshow('frame', frame_resized)
             cv2.waitKey(1)
         rep, frame = cap.read()
         i += 1
